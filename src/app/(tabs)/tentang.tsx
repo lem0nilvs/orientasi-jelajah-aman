@@ -11,7 +11,7 @@ export default function TabTentang() {
       }}
     >
       <Text
-        accessibilityLabel="Jelajah Aman"
+        accessibilityLabel="Judul Halaman Tentang Aplikasi Jelajah Aman"
         style={{
           fontSize: typeScale.judul,
           fontWeight: "bold",
