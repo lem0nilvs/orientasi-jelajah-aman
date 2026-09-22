@@ -23,6 +23,16 @@ export default function TabTentang() {
 
       <Text
         style={{
+          fontSize: typeScale.isi,
+          color: "#666",
+          marginBottom: spacing.sedang,
+        }}
+      >
+        Panduan Informasi Cuaca untuk Perjalanan Aman
+      </Text>
+
+      <Text
+        style={{
           fontSize: typeScale.subjudul,
           marginBottom: spacing.kecil,
         }}
