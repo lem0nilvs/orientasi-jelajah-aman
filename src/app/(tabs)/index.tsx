@@ -1,6 +1,6 @@
 // src/app/(tabs)/index.tsx
-import { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator, Button } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Button, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBox from "../../components/SearchBox";
 import WeatherCard from "../../components/WeatherCard";
@@ -14,7 +14,8 @@ export default function HalamanUtama() {
   const [sedangMemuat, setSedangMemuat] = useState(false);
   const [pesanError, setPesanError] = useState<string | null>(null);
 
-  const teksTertunda = useDebounce(teksCari, 500);
+  // Latihan mandiri #2: delay diubah dari 500 -> 800
+  const teksTertunda = useDebounce(teksCari, 800);
 
   useEffect(() => {
     if (teksTertunda.trim().length === 0) {
@@ -44,19 +45,39 @@ export default function HalamanUtama() {
 
       {sedangMemuat && <ActivityIndicator />}
 
+      {/* Latihan mandiri #3: accessibilityLabel */}
       {pesanError && (
         <View>
-          <Text>{pesanError}</Text>
+          <Text accessibilityLabel={`Terjadi kesalahan: ${pesanError}`}>
+            {pesanError}
+          </Text>
           <Button title="Coba Lagi" onPress={() => ambilData(teksTertunda)} />
         </View>
       )}
 
-      {!sedangMemuat && !pesanError && teksTertunda.length > 0 && hasil.length === 0 && (
-        <Text>Kota tidak ditemukan</Text>
+      {!sedangMemuat &&
+        !pesanError &&
+        teksTertunda.length > 0 &&
+        hasil.length === 0 && (
+          <Text accessibilityLabel="Kota tidak ditemukan untuk pencarian ini">
+            Kota tidak ditemukan
+          </Text>
+        )}
+
+      {/* Latihan mandiri #1: indikator jumlah hasil */}
+      {!sedangMemuat && !pesanError && hasil.length > 0 && (
+        <Text accessibilityLabel={`Ditemukan ${hasil.length} kota`}>
+          Ditemukan {hasil.length} kota
+        </Text>
       )}
 
       {hasil.map((kota) => (
-        <WeatherCard key={kota.id} kota={kota.name} suhu={29} tingkatAQI="BAIK" />
+        <WeatherCard
+          key={kota.id}
+          kota={kota.name}
+          suhu={29}
+          tingkatAQI="BAIK"
+        />
       ))}
     </SafeAreaView>
   );
