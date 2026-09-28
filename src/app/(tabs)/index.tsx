@@ -14,8 +14,7 @@ export default function HalamanUtama() {
   const [sedangMemuat, setSedangMemuat] = useState(false);
   const [pesanError, setPesanError] = useState<string | null>(null);
 
-  // Latihan mandiri #2: delay diubah dari 500 -> 800
-  const teksTertunda = useDebounce(teksCari, 800);
+  const teksTertunda = useDebounce(teksCari, 500);
 
   useEffect(() => {
     if (teksTertunda.trim().length === 0) {
@@ -47,22 +46,13 @@ export default function HalamanUtama() {
 
       {pesanError && (
         <View>
-          <Text accessibilityLabel={`Terjadi kesalahan: ${pesanError}`}>
-            {pesanError}
-          </Text>
+          <Text>{pesanError}</Text>
           <Button title="Coba Lagi" onPress={() => ambilData(teksTertunda)} />
         </View>
       )}
 
       {!sedangMemuat && !pesanError && teksTertunda.length > 0 && hasil.length === 0 && (
-        <Text accessibilityLabel="Kota tidak ditemukan untuk pencarian ini">
-          Kota tidak ditemukan
-        </Text>
-      )}
-
-      {/* Latihan mandiri #1: indikator jumlah hasil */}
-      {!sedangMemuat && !pesanError && hasil.length > 0 && (
-        <Text>Ditemukan {hasil.length} kota</Text>
+        <Text>Kota tidak ditemukan</Text>
       )}
 
       {hasil.map((kota) => (
