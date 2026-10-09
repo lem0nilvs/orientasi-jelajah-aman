@@ -1,6 +1,6 @@
 // src/app/(tabs)/index.tsx
-import { router } from "expo-router";
-import { useState, useEffect, useRef } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { mintaIzinLokasi, ambilKoordinatSaatIni } from "../../services/locationService";
 import { View, Text, ActivityIndicator, Button, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,10 +11,12 @@ import { useDebounce } from "../../hooks/use-debounce";
 import { cariKota } from "../../services/geocodingService";
 import { ambilCuaca } from "../../services/weatherService";
 import { ambilKualitasUdara } from "../../services/airQualityService";
+import { ambilSemuaFavorit } from "../../services/favoritStorage";
 import { konversiTingkatAQI } from "../../services/weatherAdapter";
 import { labelKodeCuaca } from "../../constants/weatherCodes";
 import { HasilGeocoding } from "../../types/geocoding";
 import { DataCuacaLengkap, DataKualitasUdara } from "../../types/weather";
+
 
 export default function HalamanUtama() {
   const [teksCari, setTeksCari] = useState("");
@@ -25,6 +27,7 @@ export default function HalamanUtama() {
   const [sedangMemuat, setSedangMemuat] = useState(false);
   const [pesanError, setPesanError] = useState<string | null>(null);
   const [pesanLokasi, setPesanLokasi] = useState<string | null>(null);
+  const [sudahFavorit, setSudahFavorit] = useState(false);
 
   const teksTertunda = useDebounce(teksCari, 500);
   const requestIdRef = useRef(0); // pencegah race condition
@@ -36,6 +39,18 @@ export default function HalamanUtama() {
     }
     cariKota(teksTertunda).then(setHasilPencarian).catch(() => setHasilPencarian([]));
   }, [teksTertunda]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!kotaTerpilih) {
+        setSudahFavorit(false);
+        return;
+      }
+      ambilSemuaFavorit().then((daftar) => {
+        setSudahFavorit(daftar.some((k) => k.id === kotaTerpilih.id));
+      });
+    }, [kotaTerpilih])
+  );
 
   async function pilihKota(kota: HasilGeocoding) {
     setKotaTerpilih(kota);
@@ -87,7 +102,7 @@ export default function HalamanUtama() {
     <SafeAreaView style={{ flex: 1, padding: 16, gap: 16 }}>
       <SearchBox onCari={setTeksCari} />
       <Button title="Gunakan Lokasi Saat Ini" onPress={gunakanLokasiSaatIni} />
-
+      
       {pesanLokasi && <Text>{pesanLokasi}</Text>}
 
       {hasilPencarian.map((kota) => (
@@ -117,7 +132,8 @@ export default function HalamanUtama() {
             indeksAQI={kualitasUdara.indeksAQI}
           />
           <Button
-            title="Tambahkan ke Favorit"
+            title={sudahFavorit ? "Sudah di Favorit" : "Tambahkan ke Favorit"}
+            disabled={sudahFavorit}
             onPress={() =>
               router.push({
                 pathname: "/tambah-favorit",
