@@ -54,3 +54,8 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+
+## Status Data: cache-segar, cache-basi, dan first-run offline
+cache-segar adalah data tersimpan yang umurnya masih di bawah 30 menit, sehingga langsung dipakai tanpa memanggil internet. cache-basi adalah data tersimpan yang sudah lewat 30 menit tetapi tetap ditampilkan karena internet gagal, jadi bisa saja sudah usang. First-run offline adalah kondisi belum ada cache sama sekali dan internet juga tidak ada, sehingga aplikasi hanya bisa menampilkan pesan error dengan tombol Coba Lagi. Label status data penting agar pengguna tahu apakah angka cuaca yang dilihat itu baru atau salinan lama, lalu bisa menilai seberapa jauh data tersebut bisa dipercaya.
