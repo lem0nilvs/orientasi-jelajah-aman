@@ -96,3 +96,29 @@ export async function hapusSemuaCache(): Promise<void> {
   const db = await ambilDatabase();
   await db.runAsync("DELETE FROM cache_cuaca");
 }
+
+/**
+ * TAMBAHAN UTS:
+ * Menghapus cache hanya untuk kota dengan koordinat yang dipilih.
+ * Tidak menghapus kota lain atau daftar favorit.
+ */
+export async function hapusCacheKota(
+  latitude: number,
+  longitude: number
+): Promise<void> {
+  const db = await ambilDatabase();
+
+  await db.runAsync(
+    "DELETE FROM cache_cuaca WHERE kunci = ?",
+    [buatKunci(latitude, longitude)]
+  );
+}
+
+// TAMBAHAN UTS: daftar semua kunci cache, dipakai untuk tahu kota mana yang punya cache
+export async function daftarKunciCache(): Promise<Set<string>> {
+  const db = await ambilDatabase();
+  const baris = await db.getAllAsync<{ kunci: string }>(
+    "SELECT kunci FROM cache_cuaca"
+  );
+  return new Set(baris.map((b) => b.kunci));
+}
